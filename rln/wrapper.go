@@ -132,6 +132,12 @@ func (r *RLN) SetLeavesFrom(index uint, idcommitments []byte) bool {
 	return bool(C.set_leaves_from(r.ptr, C.uintptr_t(index), idCommBuffer))
 }
 
+func (r *RLN) AtomicOperation(index uint, leaves []byte, indices []byte) bool {
+	leavesBuffer := toCBufferPtr(leaves)
+	indicesBuffer := toCBufferPtr(indices)
+	return bool(C.atomic_operation(r.ptr, C.uintptr_t(index), leavesBuffer, indicesBuffer))
+}
+
 func (r *RLN) DeleteLeaf(index uint) bool {
 	return bool(C.delete_leaf(r.ptr, C.uintptr_t(index)))
 }
