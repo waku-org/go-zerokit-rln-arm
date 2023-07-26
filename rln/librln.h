@@ -39,6 +39,8 @@ bool delete_leaf(struct RLN *ctx, uintptr_t index);
 
 bool set_leaf(struct RLN *ctx, uintptr_t index, const struct Buffer *input_buffer);
 
+bool get_leaf(struct RLN *ctx, uintptr_t index, struct Buffer *output_buffer);
+
 bool set_next_leaf(struct RLN *ctx, const struct Buffer *input_buffer);
 
 bool set_leaves_from(struct RLN *ctx, uintptr_t index, const struct Buffer *input_buffer);
@@ -87,6 +89,10 @@ bool recover_id_secret(const struct RLN *ctx,
                        const struct Buffer *input_proof_buffer_1,
                        const struct Buffer *input_proof_buffer_2,
                        struct Buffer *output_buffer);
+
+bool set_metadata(struct RLN *ctx, const struct Buffer *input_buffer);
+
+bool get_metadata(const struct RLN *ctx, struct Buffer *output_buffer);
 
 bool hash(const struct Buffer *input_buffer, struct Buffer *output_buffer);
 

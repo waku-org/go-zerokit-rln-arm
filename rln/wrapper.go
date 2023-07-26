@@ -63,12 +63,56 @@ func NewWithFolder(depth int, resourcesFolderPath string) (*RLN, error) {
 	return r, nil
 }
 
+func (r *RLN) SetTree(treeHeight uint) bool {
+	return bool(C.set_tree(r.ptr, C.uintptr_t(treeHeight)))
+}
+
+func (r *RLN) KeyGen() []byte {
+	buffer := toBuffer([]byte{})
+	if !bool(C.key_gen(r.ptr, &buffer)) {
+		return nil
+	}
+	return C.GoBytes(unsafe.Pointer(buffer.ptr), C.int(buffer.len))
+}
+
+func (r *RLN) SeededKeyGen(seed []byte) []byte {
+	seedBuff := toCBufferPtr(seed)
+	buffer := toBuffer([]byte{})
+	if !bool(C.seeded_key_gen(r.ptr, seedBuff, &buffer)) {
+		return nil
+	}
+	return C.GoBytes(unsafe.Pointer(buffer.ptr), C.int(buffer.len))
+}
+
 func (r *RLN) ExtendedKeyGen() []byte {
 	buffer := toBuffer([]byte{})
 	if !bool(C.extended_key_gen(r.ptr, &buffer)) {
 		return nil
 	}
 	return C.GoBytes(unsafe.Pointer(buffer.ptr), C.int(buffer.len))
+}
+
+func (r *RLN) ExtendedSeededKeyGen(seed []byte) []byte {
+	seedBuff := toCBufferPtr(seed)
+	buffer := toBuffer([]byte{})
+	if !bool(C.seeded_extended_key_gen(r.ptr, seedBuff, &buffer)) {
+		return nil
+	}
+	return C.GoBytes(unsafe.Pointer(buffer.ptr), C.int(buffer.len))
+}
+
+func (r *RLN) RecoverIDSecret(proof1 []byte, proof2 []byte) ([]byte, error) {
+	proof1Buff := toCBufferPtr(proof1)
+	proof2Buff := toCBufferPtr(proof2)
+
+	var output []byte
+	out := toBuffer(output)
+
+	if !bool(C.recover_id_secret(r.ptr, proof1Buff, proof2Buff, &out)) {
+		return nil, errors.New("failed to hash")
+	}
+
+	return C.GoBytes(unsafe.Pointer(out.ptr), C.int(out.len)), nil
 }
 
 func (r *RLN) Hash(input []byte) ([]byte, error) {
@@ -122,6 +166,11 @@ func (r *RLN) VerifyWithRoots(input []byte, roots []byte) (bool, error) {
 	return bool(res), nil
 }
 
+func (r *RLN) SetLeaf(index uint, idcommitment []byte) bool {
+	buff := toCBufferPtr(idcommitment[:])
+	return bool(C.set_leaf(r.ptr, C.uintptr_t(index), buff))
+}
+
 func (r *RLN) SetNextLeaf(idcommitment []byte) bool {
 	buff := toCBufferPtr(idcommitment[:])
 	return bool(C.set_next_leaf(r.ptr, buff))
@@ -130,6 +179,27 @@ func (r *RLN) SetNextLeaf(idcommitment []byte) bool {
 func (r *RLN) SetLeavesFrom(index uint, idcommitments []byte) bool {
 	idCommBuffer := toCBufferPtr(idcommitments)
 	return bool(C.set_leaves_from(r.ptr, C.uintptr_t(index), idCommBuffer))
+}
+
+func (r *RLN) InitTreeWithLeaves(idcommitments []byte) bool {
+	idCommBuffer := toCBufferPtr(idcommitments)
+	return bool(C.init_tree_with_leaves(r.ptr, idCommBuffer))
+}
+
+func (r *RLN) SetMetadata(metadata []byte) bool {
+	metadataBuffer := toCBufferPtr(metadata)
+	return bool(C.set_metadata(r.ptr, metadataBuffer))
+}
+
+func (r *RLN) GetMetadata() ([]byte, error) {
+	var output []byte
+	out := toBuffer(output)
+
+	if !bool(C.get_metadata(r.ptr, &out)) {
+		return nil, errors.New("could not obtain the metadata")
+	}
+
+	return C.GoBytes(unsafe.Pointer(out.ptr), C.int(out.len)), nil
 }
 
 func (r *RLN) AtomicOperation(index uint, leaves []byte, indices []byte) bool {
