@@ -222,3 +222,14 @@ func (r *RLN) GetRoot() ([]byte, error) {
 
 	return C.GoBytes(unsafe.Pointer(out.ptr), C.int(out.len)), nil
 }
+
+func (r *RLN) GetLeaf(index uint) ([]byte, error) {
+	var output []byte
+	out := toBuffer(output)
+
+	if !bool(C.get_leaf(r.ptr, C.uintptr_t(index), &out)) {
+		return nil, errors.New("could not get the leaf")
+	}
+
+	return C.GoBytes(unsafe.Pointer(out.ptr), C.int(out.len)), nil
+}
