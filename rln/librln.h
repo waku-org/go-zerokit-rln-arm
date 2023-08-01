@@ -94,6 +94,8 @@ bool set_metadata(struct RLN *ctx, const struct Buffer *input_buffer);
 
 bool get_metadata(const struct RLN *ctx, struct Buffer *output_buffer);
 
+bool flush(struct RLN *ctx);
+
 bool hash(const struct Buffer *input_buffer, struct Buffer *output_buffer);
 
 bool poseidon_hash(const struct Buffer *input_buffer, struct Buffer *output_buffer);
