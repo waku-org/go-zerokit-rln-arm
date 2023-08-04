@@ -41,26 +41,31 @@ func sliceToPtr(slice []byte) (*C.uchar, C.int) {
 	}
 }
 
-func NewWithParams(depth int, wasm []byte, zkey []byte, verifKey []byte) (*RLN, error) {
+func NewWithParams(depth int, wasm []byte, zkey []byte, verifKey []byte, treeConfig []byte) (*RLN, error) {
 	wasmBuffer := toCBufferPtr(wasm)
 	zkeyBuffer := toCBufferPtr(zkey)
 	verifKeyBuffer := toCBufferPtr(verifKey)
+	treeConfigBuffer := toCBufferPtr(treeConfig)
 	r := &RLN{}
 
-	if !bool(C.new_with_params(C.uintptr_t(depth), wasmBuffer, zkeyBuffer, verifKeyBuffer, &r.ptr)) {
+	if !bool(C.new_with_params(C.uintptr_t(depth), wasmBuffer, zkeyBuffer, verifKeyBuffer, treeConfigBuffer, &r.ptr)) {
 		return nil, errors.New("failed to initialize")
 	}
 
 	return r, nil
 }
 
-func NewWithFolder(depth int, resourcesFolderPath string) (*RLN, error) {
+func New(depth uint, config []byte) (*RLN, error) {
 	r := &RLN{}
-	pathBuffer := toCBufferPtr([]byte(resourcesFolderPath))
-	if !bool(C.new(C.uintptr_t(depth), pathBuffer, &r.ptr)) {
+	configBuffer := toCBufferPtr(config)
+	if !bool(C.new(C.uintptr_t(depth), configBuffer, &r.ptr)) {
 		return nil, errors.New("failed to initialize")
 	}
 	return r, nil
+}
+
+func (r *RLN) Flush() bool {
+	return bool(C.flush(r.ptr))
 }
 
 func (r *RLN) SetTree(treeHeight uint) bool {
