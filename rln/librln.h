@@ -31,6 +31,7 @@ bool new_with_params(uintptr_t tree_height,
                      const struct Buffer *circom_buffer,
                      const struct Buffer *zkey_buffer,
                      const struct Buffer *vk_buffer,
+                     const struct Buffer *tree_config,
                      struct RLN **ctx);
 
 bool set_tree(struct RLN *ctx, uintptr_t tree_height);
