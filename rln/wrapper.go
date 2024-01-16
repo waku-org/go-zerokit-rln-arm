@@ -245,6 +245,17 @@ func (r *RLN) GetLeaf(index uint) ([]byte, error) {
 	return C.GoBytes(unsafe.Pointer(out.ptr), C.int(out.len)), nil
 }
 
+func (r *RLN) GetMerkleProof(index uint) ([]byte, error) {
+	var output []byte
+	out := toBuffer(output)
+
+	if !bool(C.get_proof(r.ptr, C.uintptr_t(index), &out)) {
+		return nil, errors.New("could not get the proof")
+	}
+
+	return C.GoBytes(unsafe.Pointer(out.ptr), C.int(out.len)), nil
+}
+
 func (r *RLN) LeavesSet() uint {
 	return uint(C.leaves_set(r.ptr))
 }
