@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define TEST_PARAMETERS_INDEX 2
+#define TEST_TREE_HEIGHT 20
 
 /**
  * The RLN object.
@@ -70,10 +70,6 @@ bool verify(const struct RLN *ctx, const struct Buffer *proof_buffer, bool *proo
 bool generate_rln_proof(struct RLN *ctx,
                         const struct Buffer *input_buffer,
                         struct Buffer *output_buffer);
-
-bool generate_rln_proof_with_witness(struct RLN *ctx,
-                                     const struct Buffer *input_buffer,
-                                     struct Buffer *output_buffer);
 
 bool verify_rln_proof(const struct RLN *ctx,
                       const struct Buffer *proof_buffer,
