@@ -160,20 +160,16 @@ func (r *RLN) GenerateRLNProof(input []byte) ([]byte, error) {
 }
 
 func (r *RLN) GenerateRLNProofWithWitness(input []byte) ([]byte, error) {
-	// TODO: Temporally disabled. In RLNv2 this is not enabled yet.
-	return nil, errors.New("not implemented")
-	/*
-		inputBuffer := toCBufferPtr(input)
+	inputBuffer := toCBufferPtr(input)
 
-		var output []byte
-		out := toBuffer(output)
+	var output []byte
+	out := toBuffer(output)
 
-		if !bool(C.generate_rln_proof_with_witness(r.ptr, inputBuffer, &out)) {
-			return nil, errors.New("could not generate the proof with witness")
-		}
+	if !bool(C.generate_rln_proof_with_witness(r.ptr, inputBuffer, &out)) {
+		return nil, errors.New("could not generate the proof with witness")
+	}
 
-		return C.GoBytes(unsafe.Pointer(out.ptr), C.int(out.len)), nil
-	*/
+	return C.GoBytes(unsafe.Pointer(out.ptr), C.int(out.len)), nil
 }
 
 func (r *RLN) VerifyWithRoots(input []byte, roots []byte) (bool, error) {
